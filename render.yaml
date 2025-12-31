@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: happy-new-year-2026
+    env: static
+    buildCommand: echo "No build needed"
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=3600
+      - path: /*.css
+        name: Content-Type
+        value: text/css
+      - path: /*.js
+        name: Content-Type
+        value: application/javascript
+      - path: /*.mp3
+        name: Content-Type
+        value: audio/mpeg
