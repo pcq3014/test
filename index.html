@@ -164,6 +164,35 @@
 <script src="script.js"></script>
 
 <script>
+// Load nhạc ngay từ đầu
+const testAudio = new Audio('motnammoibinhan.mp3');
+testAudio.volume = 0.6;
+testAudio.loop = false;
+
+testAudio.addEventListener('loadedmetadata', () => {
+	testAudio.currentTime = 14;
+}, { once: true });
+
+let musicStarted = false;
+
+function startMusic() {
+	if (!musicStarted) {
+		musicStarted = true;
+		try {
+			if (testAudio.readyState >= 2) {
+				testAudio.currentTime = 14;
+			}
+			testAudio.play().then(() => {
+				console.log('Music playing from second 14');
+			}).catch(e => {
+				console.log('Music play error:', e);
+			});
+		} catch (e) {
+			console.log('Audio error:', e);
+		}
+	}
+}
+
 // Test mode - Tự động bắt đầu pháo hoa sau 2 giây
 setTimeout(() => {
 	// Ẩn loading
@@ -195,29 +224,16 @@ setTimeout(() => {
 	if (typeof soundManager !== 'undefined') {
 		soundManager.initAudioContext();
 		if (soundManager.ctx && soundManager.ctx.state === 'suspended') {
-			soundManager.ctx.resume();
+			soundManager.ctx.resume().then(() => {
+				console.log('AudioContext resumed');
+			});
 		}
 	}
 	
-	// Load và phát nhạc
-	const testAudio = new Audio('motnammoibinhan.mp3');
-	testAudio.volume = 0.6;
-	testAudio.addEventListener('loadedmetadata', () => {
-		testAudio.currentTime = 14;
-	}, { once: true });
-	
+	// Thử phát nhạc sau khi AudioContext init
 	setTimeout(() => {
-		try {
-			if (testAudio.readyState >= 2) {
-				testAudio.currentTime = 14;
-			}
-			testAudio.play().catch(e => {
-				console.log('Music autoplay prevented:', e);
-			});
-		} catch (e) {
-			console.log('Audio error:', e);
-		}
-	}, 500);
+		startMusic();
+	}, 800);
 	
 	// Hiện message sau 1 giây
 	setTimeout(() => {
@@ -237,6 +253,10 @@ setTimeout(() => {
 	}, 1000);
 	
 }, 2000);
+
+// Thêm click listener để chắc chắn nhạc chạy nếu autoplay bị block
+document.addEventListener('click', startMusic, { once: true });
+document.addEventListener('touchstart', startMusic, { once: true });
 </script>
 
 </body>
