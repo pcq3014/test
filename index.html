@@ -1,7 +1,7 @@
-<html lang="en" >
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Pháo hoa năm mới free </title>
+  <title>Test Pháo Hoa - Happy New Year 2026</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,10 +13,25 @@
 <meta name="msapplication-TileImage" content="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
 <link href="https://fonts.googleapis.com/css?family=Russo+One" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
 <link rel="stylesheet" href="style.css">
-
+<style>
+	.test-info {
+		position: fixed;
+		top: 20px;
+		left: 50%;
+		transform: translateX(-50%);
+		background: rgba(255, 215, 0, 0.9);
+		color: #000;
+		padding: 15px 30px;
+		border-radius: 10px;
+		z-index: 10000;
+		font-size: 1.2rem;
+		font-weight: bold;
+		text-align: center;
+		box-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
+	}
+</style>
 </head>
 <body>
-<!-- partial:index.partial.html -->
 <!-- SVG Spritesheet -->
 <div style="height: 0; width: 0; position: absolute; visibility: hidden;">
 	<svg xmlns="http://www.w3.org/2000/svg">
@@ -41,47 +56,27 @@
 	</svg>
 </div>
 
+<!-- Test Info Banner -->
+<div class="test-info">
+	🎆 TEST MODE - Pháo hoa tự động bắn 🎆
+</div>
+
+<!-- New Year Message Overlay -->
+<div class="newyear-message hide" id="newyearMessage">
+	<div class="message-content">
+		<h1 class="message-title">🎊 CHÚC MỪNG NĂM MỚI 2026! 🎊</h1>
+		<p class="message-text">Chúc bạn một năm mới tràn đầy niềm vui, hạnh phúc và thành công!</p>
+		<p class="message-subtitle">Mọi điều tốt đẹp sẽ đến với bạn ✨</p>
+	</div>
+</div>
+
 <!-- App -->
 <div class="container">
 	<div class="loading-init">
 		<div class="loading-init__header">Loading</div>
 		<div class="loading-init__status">Assembling Shells</div>
 	</div>
-	<!-- Countdown Timer Overlay -->
-	<div class="countdown-overlay" id="countdownOverlay">
-		<div class="countdown-content">
-			<h1 class="countdown-title">Chào đón năm mới 2026</h1>
-			<div class="countdown-timer" id="countdownTimer">
-				<div class="time-block">
-					<span class="time-value" id="days">00</span>
-					<span class="time-label">Ngày</span>
-				</div>
-				<div class="time-block">
-					<span class="time-value" id="hours">00</span>
-					<span class="time-label">Giờ</span>
-				</div>
-				<div class="time-block">
-					<span class="time-value" id="minutes">00</span>
-					<span class="time-label">Phút</span>
-				</div>
-				<div class="time-block">
-					<span class="time-value" id="seconds">00</span>
-					<span class="time-label">Giây</span>
-				</div>
-			</div>
-			<p class="countdown-subtitle">Hãy chuẩn bị cho khoảnh khắc đặc biệt...</p>
-		</div>
-	</div>
-
-	<!-- New Year Message Overlay -->
-	<div class="newyear-message hide" id="newyearMessage">
-		<div class="message-content">
-			<h1 class="message-title">🎊 CHÚC MỪNG NĂM MỚI 2026! 🎊</h1>
-			<p class="message-text">Chúc bạn một năm mới tràn đầy niềm vui, hạnh phúc và thành công!</p>
-			<p class="message-subtitle">Mọi điều tốt đẹp sẽ đến với bạn ✨</p>
-		</div>
-	</div>
-
+	
 	<div class="stage-container remove">
 		<div class="canvas-container">
 			<canvas id="trails-canvas"></canvas>
@@ -162,11 +157,87 @@
 		</div>
 	</div>
 </div>
-<!-- partial -->
-  <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/fscreen%401.0.1.js'></script>
+
+<script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/fscreen%401.0.1.js'></script>
 <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/Stage%400.1.4.js'></script>
 <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/MyMath.js'></script>
-<script  src="script.js"></script>
+<script src="script.js"></script>
+
+<script>
+// Test mode - Tự động bắt đầu pháo hoa sau 2 giây
+setTimeout(() => {
+	// Ẩn loading
+	const loading = document.querySelector('.loading-init');
+	if (loading) loading.remove();
+	
+	// Hiện stage
+	const stageContainer = document.querySelector('.stage-container');
+	if (stageContainer) {
+		stageContainer.classList.remove('remove');
+	}
+	
+	// Bật pháo hoa tự động
+	if (typeof store !== 'undefined' && store.setState) {
+		store.setState({
+			menuOpen: false,
+			paused: false,
+			soundEnabled: true,
+			config: {
+				...store.state.config,
+				autoLaunch: true,
+				finaleMode: false, // Không dùng finale mode
+				quality: 3
+			}
+		});
+	}
+	
+	// Init AudioContext
+	if (typeof soundManager !== 'undefined') {
+		soundManager.initAudioContext();
+		if (soundManager.ctx && soundManager.ctx.state === 'suspended') {
+			soundManager.ctx.resume();
+		}
+	}
+	
+	// Load và phát nhạc
+	const testAudio = new Audio('motnammoibinhan.mp3');
+	testAudio.volume = 0.6;
+	testAudio.addEventListener('loadedmetadata', () => {
+		testAudio.currentTime = 14;
+	}, { once: true });
+	
+	setTimeout(() => {
+		try {
+			if (testAudio.readyState >= 2) {
+				testAudio.currentTime = 14;
+			}
+			testAudio.play().catch(e => {
+				console.log('Music autoplay prevented:', e);
+			});
+		} catch (e) {
+			console.log('Audio error:', e);
+		}
+	}, 500);
+	
+	// Hiện message sau 1 giây
+	setTimeout(() => {
+		const message = document.getElementById('newyearMessage');
+		if (message) {
+			message.classList.remove('hide');
+			message.classList.add('show');
+			
+			// Ẩn message sau 8 giây
+			setTimeout(() => {
+				message.classList.remove('show');
+				setTimeout(() => {
+					message.classList.add('hide');
+				}, 1000);
+			}, 8000);
+		}
+	}, 1000);
+	
+}, 2000);
+</script>
 
 </body>
 </html>
